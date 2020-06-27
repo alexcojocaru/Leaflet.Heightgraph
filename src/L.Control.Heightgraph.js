@@ -74,6 +74,76 @@ L.Control.Heightgraph = L.Control.extend({
         this._onAddData();
     },
     /**
+     * add Data from geoJson and call all functions;
+     * the given data is a GeoJSON LineString or MultiLineString Feature,
+     * typically the output of L.Polyline.toGeoJSON().
+     *
+     * LineString example:
+     * {
+     *   'type': 'Feature',
+     *   'geometry': {
+     *     'type': 'LineString',
+     *     'coordinates': [[4e6, -2e6], [8e6, 2e6]]
+     *   }
+     * }
+     *
+     * MultiLineString example:
+     * {
+     *   'type': 'Feature',
+     *   'geometry': {
+     *     'type': 'MultiLineString',
+     *     'coordinates': [
+     *       [[-1e6, -7.5e5], [-1e6, 7.5e5]],
+     *       [[1e6, -7.5e5], [1e6, 7.5e5]],
+     *       [[-7.5e5, -1e6], [7.5e5, -1e6]],
+     *       [[-7.5e5, 1e6], [7.5e5, 1e6]]
+     *     ]
+     *   }
+     * }
+     *
+     * @param {Object} data
+     */
+    addDataRaw(data) {
+        const formattedGeoJson = [{
+            "type": "FeatureCollection",
+            "features": [],
+            "properties": {
+                "creator": "heightgraph",
+                "summary": "steepness"
+            }
+        }];
+
+        let steepness;
+        let previousCoord;
+        let currentFeature;
+        data.geometry.coordinates.forEach((coord, index) => {
+            if (index == 0) {
+                currentFeature = { "type": "Feature", 
+                currentFeature.push(coord);
+        });
+        formattedGeoJson[0].features.push(currentFeature);
+        
+        // update the missing attribute
+        formattedGeoJson[0].properties.records = formattedGeoJson[0].features.length;
+
+        let feature = data;
+        feature.properties = { "attributeType": 0 };
+        geojson = [{
+                "type": "FeatureCollection",
+                "features": [
+                    geojson
+                ],
+                "properties": {
+                    "Creator": "heightgraph",
+                    "records": 1,
+                    "summary": "steepness"
+                }
+            }];
+
+        // we are done massaging the raw GeoJSON; let's render it
+        this._addData(geojson);
+    }
+    /**
      * Trigger a re-render of the chart based on the existing data (e.g. on container resize).
      */
     _onAddData() {
@@ -933,11 +1003,12 @@ L.Control.Heightgraph = L.Control.extend({
             }
     },
     /*
-     * Handles the mouseover the map and displays distance and altitude level.
+     * Handles the mouseover the map event and displays distance and altitude level.
+     * The given event contains the latitude and longitude attributes.
      * Since this does a lookup of the point on the graph
      * the closest to the given latlng on the provided event, it could be slow.
      */
-    _mapMousemoveHandler(evt) {
+    _mapMousemoveHandler(event) {
         if (this._areasFlattended == false) {
             return;
         }
@@ -954,8 +1025,8 @@ L.Control.Heightgraph = L.Control.extend({
         for (i = 0; i < this._areasFlattended.length; i++) {
             let item = this._areasFlattended[i];
 
-            let latDiff = evt.latlng.lat - item.latlng.lat;
-            let lngDiff = evt.latlng.lng - item.latlng.lng;
+            let latDiff = event.latlng.lat - item.latlng.lat;
+            let lngDiff = event.latlng.lng - item.latlng.lng;
 
             // first check for an almost exact match; it's simple and avoid further calculations
             if (Math.abs(latDiff) < exactMatchRounding && Math.abs(lngDiff) < exactMatchRounding) {
