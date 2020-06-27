@@ -1,6 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v1.0.0 (2020-06-26)
+
+**Added**
+- rollup for building and bundling d3 ([#](https://github.com/GIScience/Leaflet.Heightgraph/issues/45))
+- modularization
+- `es-dev-server` (replaces lite-server) for development
+
+**Changed**
+- folder structure
+
+**Removed**
+- removed d3 dependency
+- grunt as task runner
+- unused dev-dependencies
+- lite-server
+
 ## v0.4.1 (2019-11-15)
 
 **Added**
