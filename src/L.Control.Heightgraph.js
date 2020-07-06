@@ -1,39 +1,39 @@
-import {select, selectAll, mouse} from 'd3-selection'
-import 'd3-selection-multi'
-import {scaleOrdinal,scaleLinear} from 'd3-scale'
-import {min as d3Min, max as d3Max, bisector} from 'd3-array'
-import {drag} from 'd3-drag'
-import {axisLeft, axisBottom} from 'd3-axis'
-import {format} from 'd3-format'
-import {curveBasis, curveLinear, line, area as d3Area, symbol, symbolTriangle} from 'd3-shape'
-import {
-    schemeAccent,
-    schemeDark2,
-    schemeSet2,
-    schemeCategory10,
-    schemeSet3,
-    schemePaired
-} from 'd3-scale-chromatic'
-(function (factory, window) {
-
-    // define an AMD module that relies on 'leaflet'
-    if (typeof define === 'function' && define.amd) {
-        define(['leaflet'], factory);
-
-        // define a Common JS module that relies on 'leaflet'
-    } else if (typeof exports === 'object') {
-        if (typeof window !== 'undefined' && window.L) {
-            module.exports = factory(L);
-        } else {
-            module.exports = factory(require('leaflet'));
-        }
-    }
-
-    // attach your plugin to the global 'L' variable
-    if (typeof window !== 'undefined' && window.L) {
-        window.L.Control.Heightgraph = factory(L);
-    }
-}(function (L) {
+// import {select, selectAll, mouse} from 'd3-selection'
+// import 'd3-selection-multi'
+// import {scaleOrdinal,scaleLinear} from 'd3-scale'
+// import {min as d3Min, max as d3Max, bisector} from 'd3-array'
+// import {drag} from 'd3-drag'
+// import {axisLeft, axisBottom} from 'd3-axis'
+// import {format} from 'd3-format'
+// import {curveBasis, curveLinear, line, area as d3Area, symbol, symbolTriangle} from 'd3-shape'
+// import {
+//     schemeAccent,
+//     schemeDark2,
+//     schemeSet2,
+//     schemeCategory10,
+//     schemeSet3,
+//     schemePaired
+// } from 'd3-scale-chromatic'
+// (function (factory, window) {
+// 
+//     // define an AMD module that relies on 'leaflet'
+//     if (typeof define === 'function' && define.amd) {
+//         define(['leaflet'], factory);
+// 
+//         // define a Common JS module that relies on 'leaflet'
+//     } else if (typeof exports === 'object') {
+//         if (typeof window !== 'undefined' && window.L) {
+//             module.exports = factory(L);
+//         } else {
+//             module.exports = factory(require('leaflet'));
+//         }
+//     }
+// 
+//     // attach your plugin to the global 'L' variable
+//     if (typeof window !== 'undefined' && window.L) {
+//         window.L.Control.Heightgraph = factory(L);
+//     }
+// }(function (L) {
     L.Control.Heightgraph = L.Control.extend({
         options: {
             position: "bottomright",
@@ -86,7 +86,7 @@ import {
             this._initToggle();
             this._init_options();
             // Note: this._svg really contains the <g> inside the <svg>
-            this._svg = select(this._container).append("svg").attr("class", "heightgraph-container")
+            this._svg = d3.select(this._container).append("svg").attr("class", "heightgraph-container")
             .attr("width", this._width)
             .attr("height", this._height).append("g")
             .attr("transform", "translate(" + this._margin.left + "," + this._margin.top + ")")
@@ -139,7 +139,7 @@ import {
                 this.options.height = size.height;
 
             // Resize the <svg> along with its container
-            select(this._container).selectAll("svg")
+            d3.select(this._container).selectAll("svg")
                 .attr("width", this.options.width)
                 .attr("height", this.options.height);
 
@@ -159,8 +159,8 @@ import {
         },
         _dragHandler() {
             //we don´t want map events to occur here
-            event.preventDefault();
-            event.stopPropagation();
+            d3.event.preventDefault();
+            d3.event.stopPropagation();
             this._gotDragged = true;
             this._drawDragRectangle();
         },
@@ -171,11 +171,11 @@ import {
             if (!this._dragStartCoords) {
                 return;
             }
-            const dragEndCoords = this._dragCurrentCoords = this._dragCache.end = mouse(this._background.node())
+            const dragEndCoords = this._dragCurrentCoords = this._dragCache.end = d3.mouse(this._background.node())
             const x1 = Math.min(this._dragStartCoords[0], dragEndCoords[0]),
                 x2 = Math.max(this._dragStartCoords[0], dragEndCoords[0])
             if (!this._dragRectangle && !this._dragRectangleG) {
-                const g = select(this._container).select("svg").select("g")
+                const g = d3.select(this._container).select("svg").select("g")
                 this._dragRectangleG = g.append("g");
                 this._dragRectangle = this._dragRectangleG.append("rect")
                     .attr("width", x2 - x1)
@@ -225,10 +225,10 @@ import {
             this._gotDragged = false;
         },
         _dragStartHandler() {
-            event.preventDefault();
-            event.stopPropagation();
+            d3.event.preventDefault();
+            d3.event.stopPropagation();
             this._gotDragged = false;
-            this._dragStartCoords = this._dragCache.start = mouse(this._background.node());
+            this._dragStartCoords = this._dragCache.start = d3.mouse(this._background.node());
         },
         /*
          * Calculates the full extent of the data array
@@ -267,20 +267,20 @@ import {
                 this._showState = false;
             }
             if (!this._showState) {
-                select(this._button)
+                d3.select(this._button)
                     .style("display", "none");
-                select(this._container)
+                d3.select(this._container)
                     .selectAll('svg')
                     .style("display", "block");
-                select(this._closeButton)
+                d3.select(this._closeButton)
                     .style("display", "block");
             } else {
-                select(this._button)
+                d3.select(this._button)
                     .style("display", "block");
-                select(this._container)
+                d3.select(this._container)
                     .selectAll('svg')
                     .style("display", "none");
-                select(this._closeButton)
+                d3.select(this._closeButton)
                     .style("display", "none");
             }
             this._showState = !this._showState;
@@ -315,14 +315,7 @@ import {
          * Creates a random int between 0 and max
          */
         _randomNumber: max => Math.round((Math.random() * (max - 0))),
-        _d3ColorCategorical: [
-            schemeAccent,
-            schemeDark2,
-            schemeSet2,
-            schemeCategory10,
-            schemeSet3,
-            schemePaired
-        ], /**
+        /**
          * Prepares the data needed for the height graph
          */
         _prepareData() {
@@ -334,8 +327,17 @@ import {
             const data = this._data
             let colorScale
             if (this._mappings === undefined) {
-                const randomNumber = this._randomNumber(this._d3ColorCategorical.length - 1)
-                colorScale = scaleOrdinal(this._d3ColorCategorical[randomNumber]);
+                colorScale = d3.scale.ordinal()
+                        .range([
+                                "#7fc97f",
+                                "#beaed4",
+                                "#fdc086",
+                                "#ffff99",
+                                "#386cb0",
+                                "#f0027f",
+                                "#bf5b17",
+                                "#666666"
+                        ]);
             }
             for (let y = 0; y < data.length; y++) {
                 let cumDistance = 0
@@ -433,8 +435,8 @@ import {
          * calculates minimum and maximum values for the elevation scale drawn with d3
          */
         _calculateElevationBounds() {
-            const max = d3Max(this._elevations)
-            const min = d3Min(this._elevations)
+            const max = d3.max(this._elevations)
+            const min = d3.min(this._elevations)
             const range = max - min
             this._elevationBounds = {
                 min: range < 10 ? min - 10 : min - 0.1 * range,
@@ -451,7 +453,7 @@ import {
             const layerPoint = this._map.latLngToLayerPoint(ll)
             const normalizedY = layerPoint.y - 75
             if (!this._mouseHeightFocus) {
-                const heightG = select(".leaflet-overlay-pane svg").append("g")
+                const heightG = d3.select(".leaflet-overlay-pane svg").append("g")
                 this._mouseHeightFocus = heightG.append('svg:line')
                     .attr('class', 'height-focus line')
                     .attr('x2', '0')
@@ -495,7 +497,7 @@ import {
             const maxWidth = this._dynamicBoxSize("text.tspan")[1]
             // box size should change for profile none (no type)
             const maxHeight = (type === "") ? 12 + 6 : 2 * 12 + 6
-            selectAll('.bBox')
+            d3.selectAll('.bBox')
                 .attr("width", maxWidth + 10)
                 .attr("height", maxHeight);
         },
@@ -562,7 +564,7 @@ import {
             this._typeTspan = this._focusType.append('tspan')
                 .attr("class", "tspan");
             const height = this._dynamicBoxSize(".focusbox text")[0]
-            selectAll('.focusbox rect')
+            d3.selectAll('.focusbox rect')
                 .attr("height", height * textDistance + (textDistance / 2))
                 .attr("display", "block");
             this._focusLineGroup = this._svg.append("g")
@@ -598,24 +600,24 @@ import {
                     "x": this._width - this._margin.left - this._margin.right + 7,
                     "y": this._y(this._elevationBounds.min),
                     "color": "black",
-                    "type": symbolTriangle,
+                    "type": d3.svg.symbol().type("triangle-up"),
                     "angle": -90,
                     "size": 100
                 }
             ]
             const dragstart = function (d) {
-                select(this).raise().classed("active", true)
-                select(".horizontalLine").raise().classed("active", true)
+                d3.select(this).raise().classed("active", true)
+                d3.select(".horizontalLine").raise().classed("active", true)
             }
 
             const dragged = function (d) {
                 const maxY = self._svgHeight
-                let eventY = mouse(self._container)[1] - 10
-                select(this)
+                let eventY = d3.mouse(self._container)[1] - 10
+                d3.select(this)
                 .attr("transform", d => "translate(" + d.x + "," + (eventY < 0 ? 0
                     : eventY > maxY ? maxY
                         : eventY) + ") rotate(" + d.angle + ")");
-                select(".horizontalLine")
+                d3.select(".horizontalLine")
                 .attr("y1", (eventY < 0 ? 0 : (eventY > maxY ? maxY : eventY)))
                 .attr("y2", (eventY < 0 ? 0 : (eventY > maxY ? maxY : eventY)));
                 if(eventY >= maxY){
@@ -623,17 +625,17 @@ import {
                 } else {
                     self._highlightedCoords = self._findCoordsForY(eventY);
                 }
-                select(".horizontalLineText")
+                d3.select(".horizontalLineText")
                 .attr("y", (eventY <= 10 ? 0 : (eventY > maxY ? maxY-10 : eventY-10)))
-                .text(format(".0f")(self._y.invert((eventY < 0 ? 0 : (eventY > maxY ? maxY : eventY)))) + " m");
+                .text(d3.format(".0f")(self._y.invert((eventY < 0 ? 0 : (eventY > maxY ? maxY : eventY)))) + " m");
                 self._removeMarkedSegmentsOnMap();
                 self._markSegmentsOnMap(self._highlightedCoords);
             }
 
             const dragend = function (d) {
-                select(this)
+                d3.select(this)
                 .classed("active", false);
-                select(".horizontalLine")
+                d3.select(".horizontalLine")
                 .classed("active", false);
                 self._removeMarkedSegmentsOnMap();
                 self._markSegmentsOnMap(self._highlightedCoords);
@@ -641,11 +643,11 @@ import {
 
             const horizontalDrag = this._svg.selectAll(".horizontal-symbol").data(jsonTriangle).enter().append("path").
                 attr("class", "lineSelection")
-                .attr("d", symbol().type(d => d.type).size(d => d.size))
+                .attr("d", d3.svg.symbol().type(d => d.type).size(d => d.size))
                 .attr("transform", d => "translate(" + d.x + "," + d.y + ") rotate(" + d.angle + ")")
                 .attr("id", d => d.id)
                 .style("fill", d => d.color)
-                .call(drag().on("start", dragstart).on("drag", dragged).on("end", dragend))
+                .call(d3.behavior.drag().on("dragstart", dragstart).on("drag", dragged).on("dragend", dragend))
         },
         /**
          * Highlights segments on the map above given elevation value
@@ -682,22 +684,24 @@ import {
          */
         _appendScales() {
             const shortDist = Boolean(this._totalDistance <= 10)
-            this._x = scaleLinear()
+            this._x = d3.scale.linear()
                 .range([0, this._svgWidth]);
-            this._y = scaleLinear()
+            this._y = d3.scale.linear()
                 .range([this._svgHeight, 0]);
             this._x.domain([0, this._totalDistance]);
             this._y.domain([this._elevationBounds.min, this._elevationBounds.max]);
-            this._xAxis = axisBottom()
+            this._xAxis = d3.svg.axis()
                 .scale(this._x)
+                .orient("bottom")
             if (shortDist === true) {
-                this._xAxis.tickFormat(d => format(".2f")(d) + " km");
+                this._xAxis.tickFormat(d => d3.format(".2f")(d) + " km");
             } else {
-                this._xAxis.tickFormat(d => format(".0f")(d) + " km");
+                this._xAxis.tickFormat(d => d3.format(".0f")(d) + " km");
             }
             this._xAxis.ticks(this.options.xTicks ? Math.pow( 2, this.options.xTicks) : Math.round(this._svgWidth / 75),"s");
-            this._yAxis = axisLeft()
+            this._yAxis = d3.svg.axis()
                 .scale(this._y)
+                .orient("left")
                 .tickFormat(d => d + " m");
             this._yAxis.ticks(this.options.yTicks ? Math.pow(2, this.options.yTicks) : Math.round(this._svgHeight / 30),"s");
         },
@@ -705,7 +709,7 @@ import {
          * Appends a background and adds mouse handlers
          */
         _appendBackground() {
-            const background = this._background = select(this._container)
+            const background = this._background = d3.select(this._container)
                 .select("svg")
                 .select("g")
                 .append("rect")
@@ -761,36 +765,41 @@ import {
         _appendAreas(block, idx, eleIdx) {
             const c = this._categories[idx].attributes[eleIdx].color
             const self = this
-            const area = this._area = d3Area().x(d => {
+            const area = this._area = d3.svg.area().x(d => {
                 const xDiagonalCoordinate = self._x(d.position)
                 d.xDiagonalCoordinate = xDiagonalCoordinate
                 return xDiagonalCoordinate
-            }).y0(this._svgHeight).y1(d => self._y(d.altitude)).curve(curveLinear)
+            }).y0(this._svgHeight).y1(d => self._y(d.altitude)).interpolate("linear")
             this._areapath = this._svg.append("path")
                 .attr("class", "area");
             this._areapath.datum(block)
                 .attr("d", this._area)
-                .attr("stroke", c)
-                .styles(this._graphStyle)
+                .attr("stroke", c);
+            for (let attrName in this._graphStyle) {
+                this._areapath.style(attrName, this._graphStyle[attrName])
+            }
+            this._areapath
                 .style("fill", c)
                 .style("pointer-events", "none");
         },
         // grid lines in x axis function
         _make_x_axis() {
-            return axisBottom()
-                .scale(this._x);
+            return d3.svg.axis()
+                .scale(this._x)
+                .orient("bottom");
         },
         // grid lines in y axis function
         _make_y_axis() {
-            return axisLeft()
-                .scale(this._y);
+            return d3.svg.axis()
+                .scale(this._y)
+                .orient("left");
         },
         /**
          * Appends a selection box for different blocks
          */
         _createSelectionBox() {
             const self = this
-            const svg = select(this._container).select("svg")
+            const svg = d3.select(this._container).select("svg")
             const width = this._width - this._margin.right,
                 height = this._height - this._margin.bottom
             const verticalItemPosition = height + this._margin.bottom / 2 + 6
@@ -799,14 +808,14 @@ import {
                     "x": width - 25,
                     "y": verticalItemPosition + 3,
                     "color": "#000",
-                    "type": symbolTriangle,
+                    "type": d3.svg.symbol().type("triangle-up"),
                     "id": "leftArrowSelection",
                     "angle": 0
                 }, {
                     "x": width - 10,
                     "y": verticalItemPosition,
                     "color": "#000",
-                    "type": symbolTriangle,
+                    "type": d3.svg.symbol().type("triangle-up"),
                     "id": "rightArrowSelection",
                     "angle": 180
                 }
@@ -918,7 +927,10 @@ import {
                 .attr('width', 6)
                 .attr('height', 6);
             if (Object.keys(this._graphStyle).length !== 0) {
-                legendRect.styles(this._graphStyle)
+                for (let attrName in this._graphStyle) {
+                    legendRect.style(attrName, this._graphStyle[attrName])
+                }
+                legendRect
                     .style('stroke', (d, i) => d.color)
                     .style('fill', (d, i) => d.color);
             } else {
@@ -946,12 +958,12 @@ import {
                 .attr('text-anchor', "start")
                 .text((d, i) => d.text)
                 .on('mouseover', () => {
-                    selectAll('.legend')
+                    d3.selectAll('.legend')
                         .style("display", "block");
                 })
                 .on('mouseleave', () => {
                     if (!this._showLegend) {
-                        selectAll('.legend')
+                        d3.selectAll('.legend')
                             .style("display", "none");
                     }
                 })
@@ -965,15 +977,13 @@ import {
          * @return {array} borders: number of text lines, widest range of text
          */
         _dynamicBoxSize(className) {
-            const cnt = selectAll(className).nodes().length
             const widths = []
-            for (let i = 0; i < cnt; i++) {
-                widths.push(selectAll(className)
-                    .nodes()[i].getBoundingClientRect()
-                    .width);
-            }
-            const maxWidth = d3Max(widths)
-            return [cnt, maxWidth];
+            d3.selectAll(className)
+                    .each(function (datum, index) {
+                        widths.push(this.getBoundingClientRect().width);
+                    });
+            const maxWidth = d3.max(widths);
+            return [widths.length, maxWidth];
         },
         /**
          * Creates top border line on graph
@@ -981,7 +991,7 @@ import {
         _createBorderTopLine() {
             const self = this
             const data = this._areasFlattended
-            const borderTopLine = line()
+            const borderTopLine = d3.svg.line()
                 .x(d => {
                     const x = self._x
                     return x(d.position)
@@ -990,7 +1000,7 @@ import {
                     const y = self._y
                     return y(d.altitude)
                 })
-                .curve(curveBasis)
+                .interpolate("basis")
             this._svg.append("svg:path")
                 .attr("d", borderTopLine(data))
                 .attr('class', 'border-top');
@@ -1055,7 +1065,7 @@ import {
          * Handles the mouseover the chart and displays distance and altitude level
          */
         _mousemoveHandler(d, i, ctx) {
-            const coords = mouse(this._svg.node())
+            const coords = d3.mouse(this._svg.node())
             const item = this._areasFlattended[this._findItemForX(coords[0])];
             if (item) this._internalMousemoveHandler(item);
         },
@@ -1098,7 +1108,7 @@ import {
          * Finds a data entry for a given x-coordinate of the diagram
          */
         _findItemForX(x) {
-            const bisect = bisector(d => d.position).left
+            const bisect = d3.bisector(d => d.position).left
             const xInvert = this._x.invert(x)
             return bisect(this._areasFlattended, xInvert);
         },
@@ -1152,5 +1162,5 @@ import {
         return new L.Control.Heightgraph(options)
     }
 
-    return L.Control.Heightgraph
-}, window))
+//     return L.Control.Heightgraph
+// }, window))
