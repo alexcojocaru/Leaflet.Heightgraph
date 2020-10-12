@@ -828,21 +828,22 @@
             selectionSign = svg.selectAll(".select-symbol").data(jsonTriangles)
             // then add only if needed
             if (self._data.length > 1) {
-                selectionSign.enter().
-                    append("path").
-                    merge(selectionSign).
-                    attr("class", "select-symbol").
-                    attr("d", symbol().type(d => d.type)).
-                    attr("transform", d => "translate(" + d.x + "," + d.y + ") rotate(" + d.angle + ")").
-                    attr("id", d => d.id).style("fill", d => d.color).
-                    on("mousedown", d => {
-                        if (d.id === "rightArrowSelection") arrowRight()
-                        if (d.id === "leftArrowSelection") arrowLeft()
-                        // fake a drag event from cache values to keep selection
-                        self._gotDragged = true
-                        self._dragStartCoords = self._dragCache.start
-                        self._dragCurrentCoords = self._dragCache.end
-                    })
+                let selectionSignWithPath = selectionSign.enter().append("path");
+                [selectionSignWithPath, selectionSign].forEach(function(item) {
+                    item.
+                        attr("class", "select-symbol").
+                        attr("d", d3.svg.symbol().type(d => d.type)).
+                        attr("transform", d => "translate(" + d.x + "," + d.y + ") rotate(" + d.angle + ")").
+                        attr("id", d => d.id).style("fill", d => d.color).
+                        on("mousedown", d => {
+                            if (d.id === "rightArrowSelection") arrowRight()
+                            if (d.id === "leftArrowSelection") arrowLeft()
+                            // fake a drag event from cache values to keep selection
+                            self._gotDragged = true
+                            self._dragStartCoords = self._dragCache.start
+                            self._dragCurrentCoords = self._dragCache.end
+                        })
+                });
             }
             const chooseSelection = (id) => {
                 if (self._selectionText) self._selectionText.remove();
