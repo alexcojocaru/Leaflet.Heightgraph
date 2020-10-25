@@ -1282,10 +1282,10 @@ function schedule(node, name, id, index, group, timing) {
     group: group, // For context during callback.
     on: emptyOn,
     tween: emptyTween,
-    time: timing.time,
-    delay: timing.delay,
-    duration: timing.duration,
-    ease: timing.ease,
+    time: timing ? timing.time : 0,
+    delay: timing ? timing.delay : 0,
+    duration: timing ? timing.duration : 0,
+    ease: timing ? timing.ease : null,
     timer: null,
     state: CREATED
   });
@@ -3062,7 +3062,7 @@ function initRange(domain, range) {
 
 var prefix = "$";
 
-function Map() {}
+// function Map() {}
 
 Map.prototype = map.prototype = {
   constructor: Map,
